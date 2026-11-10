@@ -52,7 +52,7 @@ satellite-quantum-optimizer/
 Requires Python 3.12.
 
 ```bash
-git clone https://github.com/your-org/satellite-quantum-optimizer.git
+git clone https://github.com/MD-KAMALUDDIN/Satellite-Constellation
 cd satellite-quantum-optimizer
 python -m venv .venv
 .venv\Scripts\activate        # Windows
