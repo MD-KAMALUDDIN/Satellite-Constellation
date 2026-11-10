@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data & results
+data/raw/
+data/processed/
+data/results/
+*.csv
+*.json
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+
+# Logs & temp
+*.log
+*.tmp
+*.cache
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets & credentials
+.env
+*.env
+secrets.yaml
+ibm_credentials.yaml
+qiskit_credentials.json
+
+# Qiskit / IBM Quantum
+.qiskit/
+
+# Config overrides (keep templates, ignore local overrides)
+config/local_*.yaml
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/

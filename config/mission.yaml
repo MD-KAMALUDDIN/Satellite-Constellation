@@ -1,0 +1,31 @@
+mission:
+  name: Satellite Quantum Optimization V1
+
+  simulation:
+    duration_hours: 24
+    time_step_seconds: 30
+
+  constraints:
+    minimum_elevation_deg: 10.0
+    minimum_battery_reserve_percent: 20.0
+    maximum_off_nadir_deg: 30.0
+
+  scoring:
+    task_value_weight: 0.40
+    image_quality_weight: 0.20
+    future_value_weight: 0.15
+    energy_weight: 0.10
+    slew_weight: 0.10
+    data_weight: 0.05
+
+  quantum:
+    algorithm: QAOA
+    default_depth: 2
+    max_iterations: 50
+    shots: 2048
+    max_candidates: 20
+
+  execution:
+    default_backend: local
+    allow_ibm_simulator: true
+    allow_ibm_hardware: true

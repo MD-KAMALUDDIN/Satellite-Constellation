@@ -1,0 +1,120 @@
+satellites:
+  - id: SAT-01
+    name: Satellite 01
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 0.0
+    phase_deg: 0.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 850
+    storage_capacity_gb: 256
+    initial_storage_gb: 40
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-02
+    name: Satellite 02
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 36.0
+    phase_deg: 36.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 820
+    storage_capacity_gb: 256
+    initial_storage_gb: 35
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-03
+    name: Satellite 03
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 72.0
+    phase_deg: 72.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 900
+    storage_capacity_gb: 256
+    initial_storage_gb: 50
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-04
+    name: Satellite 04
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 108.0
+    phase_deg: 108.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 780
+    storage_capacity_gb: 256
+    initial_storage_gb: 45
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-05
+    name: Satellite 05
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 144.0
+    phase_deg: 144.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 860
+    storage_capacity_gb: 256
+    initial_storage_gb: 30
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-06
+    name: Satellite 06
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 180.0
+    phase_deg: 180.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 810
+    storage_capacity_gb: 256
+    initial_storage_gb: 42
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-07
+    name: Satellite 07
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 216.0
+    phase_deg: 216.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 920
+    storage_capacity_gb: 256
+    initial_storage_gb: 55
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-08
+    name: Satellite 08
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 252.0
+    phase_deg: 252.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 800
+    storage_capacity_gb: 256
+    initial_storage_gb: 38
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-09
+    name: Satellite 09
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 288.0
+    phase_deg: 288.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 870
+    storage_capacity_gb: 256
+    initial_storage_gb: 48
+    slew_rate_deg_per_sec: 2.0
+
+  - id: SAT-10
+    name: Satellite 10
+    altitude_km: 550
+    inclination_deg: 53.0
+    raan_deg: 324.0
+    phase_deg: 324.0
+    battery_capacity_wh: 1000
+    initial_battery_wh: 840
+    storage_capacity_gb: 256
+    initial_storage_gb: 32
+    slew_rate_deg_per_sec: 2.0

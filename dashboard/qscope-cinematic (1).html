@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q-SCOPE | Quantum Satellite Constellation Optimization & Planning Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--c:#16d9ff;--g:#39ffb0;--k:#ff3d9a;--o:#ffb454;--v:#b47cff;--b:#143a55;--m:#7aa3b8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;color:#d8ecf7;font:16px Rajdhani,sans-serif;background:radial-gradient(ellipse at 20% 10%,#0b2a4a55,transparent 50%),radial-gradient(ellipse at 85% 70%,#3a0f4a44,transparent 55%),#010409}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+body:after{content:"";position:fixed;inset:0;z-index:50;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#16d9ff08 2px 3px)}
+nav{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;gap:26px;align-items:center;padding:12px 28px;background:linear-gradient(#010409f0,#0000);font:11px 'Share Tech Mono';letter-spacing:2px}
+nav b{font:800 18px Orbitron;color:var(--c);letter-spacing:6px;text-shadow:0 0 14px #16d9ff88}nav a{color:var(--m);text-decoration:none}nav a:hover{color:var(--c)}nav .sp{flex:1}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 10px var(--g);margin-right:7px;animation:pl 1.6s infinite}.dot.w{background:var(--o);box-shadow:0 0 10px var(--o)}
+@keyframes pl{50%{opacity:.3}}
+section{position:relative;z-index:2;padding:110px 6vw 40px;min-height:100vh}
+#hero{display:flex;align-items:center}.hl{max-width:640px}
+.k{font:11px 'Share Tech Mono';letter-spacing:3px;color:var(--c)}
+h1{font:800 clamp(56px,9vw,120px)/1 Orbitron;margin:14px 0;letter-spacing:10px;background:linear-gradient(90deg,#fff,var(--c) 60%,var(--v));-webkit-background-clip:text;color:transparent;filter:drop-shadow(0 0 22px #16d9ff55);animation:fl 6s infinite}
+@keyframes fl{97%{opacity:1}98%{opacity:.6}99%{opacity:1}}
+h2{font:800 clamp(24px,3.4vw,40px) Orbitron;letter-spacing:4px;margin:0 0 6px}.lead{color:var(--m);max-width:720px;font-size:18px;margin:0 0 22px}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:22px 0}
+.pn{position:relative;background:#04101bcc;border:1px solid var(--b);padding:16px;backdrop-filter:blur(8px)}
+.pn:before,.pn:after{content:"";position:absolute;width:12px;height:12px;border:2px solid var(--c)}.pn:before{left:-1px;top:-1px;border-right:0;border-bottom:0}.pn:after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.stat b{display:block;font:800 30px Orbitron;color:#fff;text-shadow:0 0 12px var(--c)}.stat small{font:9px 'Share Tech Mono';letter-spacing:2px;color:var(--m)}
+#log{font:11px/1.7 'Share Tech Mono';color:#6fb6cf;max-height:170px;overflow:hidden}#log .ok{color:var(--g)}#log .no{color:var(--o)}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+button,.chip{font:12px 'Share Tech Mono';letter-spacing:2px;color:var(--c);background:#04101b;border:1px solid #1d5a7a;padding:10px 16px;cursor:pointer;transition:.2s}
+button:hover:not(:disabled),.chip:hover{box-shadow:0 0 18px #16d9ff44;background:#0a2a3d}button.on,.chip.on{background:#0c3a52;border-color:var(--c);color:#fff}button:disabled{opacity:.35;cursor:not-allowed}
+.chip.on{border-color:var(--k);color:var(--k);background:#2a0c20}.big{padding:16px 34px;font-size:15px;border-color:var(--g);color:var(--g)}
+.tp{display:none}.tp.on{display:block}canvas.cc{width:100%;display:block;background:#020a12}
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.sc h3{margin:0;font:700 20px Rajdhani;letter-spacing:2px}.sc .tl{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:10px;font:11px 'Share Tech Mono';color:var(--m)}.sc .tl span{display:block;color:#e8f8ff;font-size:15px}
+.row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid #143a5599;font:12px 'Share Tech Mono';color:var(--m)}.row b{color:#d8f4ff;font-weight:400;text-align:right}
+.ok{color:var(--g)!important}.bad{color:var(--k)!important}.warn{color:var(--o)!important}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}.step b{font:800 26px Orbitron;color:#1d5a7a}.step h4{margin:4px 0;font:700 17px Rajdhani;letter-spacing:2px;color:var(--c)}.step p{margin:0;color:var(--m);font-size:14px}.step em{display:block;margin-top:10px;font:12px 'Share Tech Mono';color:var(--g);font-style:normal}.step.q h4,.step.q b{color:var(--v)}
+.eq{font:15px/1.9 'Share Tech Mono';color:#cfe9f5;overflow-x:auto}.eq i{color:var(--c)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:900px){.two,.stats{grid-template-columns:1fr 1fr}nav a{display:none}}
+table{width:100%;border-collapse:collapse;font:12px 'Share Tech Mono'}td,th{padding:7px;border-top:1px solid #143a5599;text-align:left;font-weight:400}th{color:var(--c)}
+#tl6{position:relative;height:34px;border:1px solid var(--b);background:repeating-linear-gradient(90deg,#0a2236 0 1px,#0000 1px 16.66%)}#tl6 div{position:absolute;top:4px;bottom:4px;background:#39ffb066;border:1px solid var(--g);font:9px 'Share Tech Mono';color:var(--g);overflow:hidden;white-space:nowrap}
+.lab{position:fixed;z-index:3;pointer-events:none;font:10px 'Share Tech Mono';letter-spacing:1px;color:#bfeaff;white-space:nowrap;transform:translate(14px,-8px);text-shadow:0 0 6px #000;border-left:1px solid var(--c);padding-left:6px}
+.lab.g{color:#6fb6cf;border:0;padding:0;font-size:9px;opacity:.85}.lab.t{color:#ff9ccc;border-color:var(--k)}
+#hud{position:fixed;left:20px;bottom:20px;z-index:45;width:250px;padding:10px 12px;pointer-events:none;font:11px 'Share Tech Mono'}#hud .row{padding:4px 0}
+.rv{opacity:0;transform:translateY(34px);transition:1s cubic-bezier(.2,.7,.2,1)}.rv.in{opacity:1;transform:none}
+.note{font:11px/1.7 'Share Tech Mono';color:#5c8399}footer{position:relative;z-index:2;text-align:center;padding:40px;font:11px 'Share Tech Mono';color:#4e7388;letter-spacing:2px}
+</style></head><body>
+<canvas id="bg"></canvas><div class="pn" id="hud"><div class="k">EARTH · WGS-84 COORDINATES</div><div class="row"><span>CURSOR LAT</span><b id="hLa">—</b></div><div class="row"><span>CURSOR LON</span><b id="hLo">—</b></div><div class="row"><span>SUB-SOLAR LAT</span><b id="sLa">—</b></div><div class="row"><span>SUB-SOLAR LON</span><b id="sLo">—</b></div></div><div id="labs"></div>
+<nav><b>Q-SCOPE</b><a href="#live">LIVE</a><a href="#pipe">PIPELINE</a><a href="#opt">OPTIMIZER</a><a href="#truth">TRANSPARENCY</a><span class="sp"></span><span><i class="dot w" id="dsrc"></i><span id="src">LINKING…</span></span><span>UTC <b id="clk" style="color:var(--c)">--:--:--</b></span></nav>
+
+<section id="hero"><div class="hl">
+<div class="k">PLUS QISKIT FALL FEST 2026 · UC-096 · MULTI-CONSTRAINT SATELLITE TASKING</div>
+<h1>Q-SCOPE</h1>
+<p class="lead">Real orbits in. Validated mission schedule out. Orbital propagation, access windows, conflict graph, QUBO and QAOA, checked by an independent validator.</p>
+<div class="stats"><div class="pn stat"><b id="sS">5</b><small>SPACECRAFT</small></div><div class="pn stat"><b id="sT">6</b><small>TARGETS</small></div><div class="pn stat"><b id="sW">--</b><small>ACCESS WINDOWS</small></div><div class="pn stat"><b id="sC">--</b><small>CANDIDATES</small></div><div class="pn stat"><b id="sX">--</b><small>CONFLICTS</small></div></div>
+<div class="pn" id="log"></div><p class="note">SCROLL TO ENTER MISSION CONTROL ▾</p></div></section>
+
+<section id="live"><div class="rv"><h2>Live constellation</h2><p class="lead">Five Sentinel spacecraft, refreshed every second from propagated orbital state.</p>
+<div class="tabs" id="tabs"><button class="on" data-t="t1">TELEMETRY</button><button data-t="t2">GROUND TRACK</button><button data-t="t3">ACCESS WINDOWS · 6 H</button><button data-t="t4">CONFLICT GRAPH</button></div>
+<div class="tp on" id="t1"><div class="tg" id="cards"></div></div>
+<div class="tp" id="t2"><div class="pn"><canvas class="cc" id="map" style="aspect-ratio:2/1"></canvas><p class="note">Tracks ±45 min · rings = ground reach at 10° minimum elevation · pink = targets</p></div></div>
+<div class="tp" id="t3"><div class="pn"><canvas class="cc" id="gantt" style="height:300px"></canvas><p class="note" id="gn"></p></div></div>
+<div class="tp" id="t4"><div class="pn"><canvas class="cc" id="graph" style="height:380px"></canvas><p class="note">Nodes are candidate observations, edges are conflicts. Preview rules: same-spacecraft window overlap, or the same target served twice. The repo's conflict code is authoritative.</p></div></div></div></section>
+
+<section id="pipe"><div class="rv"><h2>Mission pipeline</h2><p class="lead">Each stage shows a real number from the data above.</p>
+<div class="steps" id="steps"></div>
+<div class="pn eq" style="margin-top:14px"><i>x<sub>i</sub> ∈ {0,1}</i> &nbsp;1 = candidate observation i is selected<br>
+<i>E(x)</i> = Σ<sub>i</sub> Q<sub>ii</sub>x<sub>i</sub> + Σ<sub>i&lt;j</sub> Q<sub>ij</sub>x<sub>i</sub>x<sub>j</sub> + const &nbsp;where &nbsp;Q<sub>ii</sub> = −priority<sub>i</sub> + penalties, &nbsp;Q<sub>ij</sub> = conflict penalty<br>
+<span class="note">Live size: <b id="qn" style="color:var(--g)">--</b> binary variables, <b id="qe" style="color:var(--g)">--</b> conflict couplings. Exact coefficients come from <code>optimization/qubo.py</code> through <code>/api/optimize</code>.</span></div></div></section>
+
+<section id="opt"><div class="rv"><h2>Optimizer console</h2><p class="lead">Lock a target, see the real spacecraft opportunities, then run Q-SCOPE. The nearest spacecraft does not automatically win.</p>
+<div class="tabs" id="tchips"></div>
+<div class="two"><div class="pn"><div class="k">SPACECRAFT OPPORTUNITIES</div><div id="opps" class="note" style="margin-top:10px">Lock a target.</div><button class="big" id="run" disabled style="margin-top:14px;width:100%">RUN Q-SCOPE</button><p class="note" id="onote">Runs only on click. Calls POST /api/optimize.</p></div>
+<div class="pn" id="resp"><div class="k">OPTIMIZED MISSION</div><div id="mis" class="note" style="margin-top:10px">Waiting for a run.</div></div></div>
+<div class="two" style="margin-top:14px"><div class="pn"><div class="k">QAOA SOLVER</div><div id="qa"></div></div><div class="pn"><div class="k">CLASSICAL vs QAOA</div><div id="cmp"></div></div></div>
+<div class="pn" style="margin-top:14px"><div class="k">OPTIMIZED TIMELINE · NEXT 6 H</div><div id="tl6" style="margin-top:10px"></div><button id="go" disabled style="margin-top:14px">START MISSION (SIMULATED)</button><p class="note" id="exe"></p></div></div></section>
+
+<section id="truth"><div class="rv"><h2>Scientific transparency</h2><div class="two">
+<div class="pn"><div class="k ok">REAL COMPUTATION</div><div class="row"><span>Orbital data</span><b>CelesTrak OMM</b></div><div class="row"><span>Propagator</span><b>SGP4</b></div><div class="row"><span>Access / candidates</span><b>computed from orbits</b></div><div class="row"><span>QUBO, QAOA, validator</span><b>Python backend</b></div></div>
+<div class="pn"><div class="k warn">VISUAL / SIMULATED</div><div class="row"><span>Spacecraft geometry</span><b>stylized, not Sentinel CAD</b></div><div class="row"><span>Mission execution</span><b>animation only</b></div><div class="row"><span>Quantum advantage</span><b>not claimed</b></div><div class="row"><span>Spacecraft commanding</span><b>none</b></div></div></div>
+<p class="note">Browser access analysis uses SGP4 plus a spherical-Earth elevation model as a preview. The backend validator decides feasibility.</p></div></section>
+<footer>Q-SCOPE · QUANTUM SATELLITE CONSTELLATION OPTIMIZATION & PLANNING ENGINE</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
+<script>
+const $=i=>document.getElementById(i),D=Math.PI/180,R=10,Re=6371,K=R/Re,MU=398600.4418,SL=window.satellite;
+const COL=[0x18dcff,0xff4da6,0xffb84d,0x72ff86,0xb47cff],hex=c=>"#"+c.toString(16).padStart(6,0);
+const SATS=[["SENTINEL-1A",39634,693,98.18,0,0],["SENTINEL-2A",40697,786,98.62,40,60],["SENTINEL-2B",42063,786,98.62,40,240],["SENTINEL-3A",41335,814,98.65,80,140],["SENTINEL-5P",42969,824,98.74,120,300]].map(([n,id,alt,inc,ra,ph],i)=>({n,id,alt,inc,ra,ph,c:COL[i],rec:null,omm:null}));
+const TG=[["HYD","Hyderabad",17.385,78.4867],["VJA","Vijayawada",16.5062,80.648],["BLR","Bengaluru",12.9716,77.5946],["CHN","Chennai",13.0827,80.2707],["MUM","Mumbai",19.076,72.8777],["DEL","New Delhi",28.6139,77.209]];
+const T0=Date.now();let live=false,WN=[],CF=[],active=null,PD=null;
+const log=(t,c="")=>{const d=document.createElement("div");d.innerHTML=`<span class="${c}">›</span> ${t}`;$("log").appendChild(d);$("log").scrollTop=1e9};
+const gst=ms=>SL?SL.gstime(new Date(ms)):((280.46061837+360.98564736629*(ms/864e5+2440587.5-2451545))%360)*D;
+function pos(s,ms){if(s.rec){const r=SL.propagate(s.rec,new Date(ms));return r&&r.position?[r.position.x,r.position.y,r.position.z]:null}
+ const a=Re+s.alt,u=Math.sqrt(MU/a**3)*(ms-T0)/1e3+s.ph*D,O=s.ra*D,i=s.inc*D;
+ return[a*(Math.cos(O)*Math.cos(u)-Math.sin(O)*Math.cos(i)*Math.sin(u)),a*(Math.sin(O)*Math.cos(u)+Math.cos(O)*Math.cos(i)*Math.sin(u)),a*Math.sin(i)*Math.sin(u)]}
+const ecf=(p,ms)=>{const g=gst(ms),c=Math.cos(g),s=Math.sin(g);return[p[0]*c+p[1]*s,-p[0]*s+p[1]*c,p[2]]};
+function geo(s,ms){const p=pos(s,ms);if(!p)return null;const e=ecf(p,ms),r=Math.hypot(...e),q=pos(s,ms+1e3);
+ return{p,lat:Math.asin(e[2]/r)/D,lon:Math.atan2(e[1],e[0])/D,alt:r-Re,v:q?Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2]):0,per:2*Math.PI*Math.sqrt(r**3/MU)/60}}
+const f=(v,n=2)=>v==null||isNaN(v)?"N/A":Number(v).toFixed(n),utc=ms=>new Date(ms).toISOString().slice(11,19)+"Z";
+const g=(o,...ks)=>{for(const k of ks)if(o&&o[k]!=null)return o[k];return"N/A"};
+// ---------- data ----------
+async function load(){log("INITIALIZING MISSION DATA LINK");let ok=0;
+ if(SL){await Promise.all(SATS.map(async s=>{try{const c=new AbortController();setTimeout(()=>c.abort(),7000);
+  const r=await fetch(`https://celestrak.org/NORAD/elements/gp.php?CATNR=${s.id}&FORMAT=json`,{signal:c.signal}),j=await r.json();s.omm=j[0];s.rec=SL.json2satrec(j[0]);ok++;
+  log(`CELESTRAK OMM ${s.id} ${s.n} · EPOCH ${s.omm.EPOCH} <span class="ok">OK</span>`)}catch(e){log(`CELESTRAK OMM ${s.id} ${s.n} <span class="no">UNAVAILABLE</span>`)}}))}
+ else log('SGP4 LIBRARY <span class="no">NOT LOADED</span>');
+ if(ok<5){SATS.forEach(s=>s.rec=null);live=false;$("src").innerHTML='<span class="warn">OFFLINE PREVIEW · ILLUSTRATIVE ORBITS, NOT REAL DATA</span>';log('<span class="no">ORBIT DATA UNAVAILABLE — showing circular nominal-orbit preview, not CelesTrak</span>')}
+ else{live=true;$("dsrc").className="dot";$("src").textContent="LIVE · REAL CELESTRAK OMM · SGP4";log('SGP4 PROPAGATION ACTIVE <span class="ok">LIVE</span>')}
+ analyze();log(`ACCESS ANALYSIS: ${WN.length} WINDOWS · ${CF.length} CONFLICTS <span class="ok">DONE</span>`);buildOrbits();buildChips();steps()}
+function analyze(){const N=720,st=3e4,t0=Date.now(),P=SATS.map(s=>{const a=[];for(let i=0;i<=N;i++){const ms=t0+i*st,p=pos(s,ms);a.push(p&&ecf(p,ms))}return a});WN=[];
+ SATS.forEach((s,si)=>TG.forEach((t,ti)=>{const la=t[2]*D,lo=t[3]*D,o=[Re*Math.cos(la)*Math.cos(lo),Re*Math.cos(la)*Math.sin(lo),Re*Math.sin(la)];let w=null;
+  for(let i=0;i<=N;i++){const e=P[si][i];let el=-1;if(e){const r=[e[0]-o[0],e[1]-o[1],e[2]-o[2]];el=Math.asin((r[0]*o[0]+r[1]*o[1]+r[2]*o[2])/(Math.hypot(...r)*Re))/D}
+   if(el>=10){if(!w)w={si,ti,a:t0+i*st,b:0,mx:0};w.b=t0+i*st;w.mx=Math.max(w.mx,el)}else if(w){WN.push(w);w=null}}if(w)WN.push(w)}));
+ CF=[];WN.forEach((x,i)=>WN.forEach((y,j)=>{if(j>i&&((x.si==y.si&&x.a<=y.b&&y.a<=x.b)||(x.ti==y.ti&&x.si!=y.si)))CF.push([i,j])}));
+ cnt("sW",WN.length);cnt("sC",WN.length);cnt("sX",CF.length);$("qn").textContent=WN.length;$("qe").textContent=CF.length;
+ $("gn").textContent=`${WN.length} real access windows (elevation ≥ 10°) from ${utc(t0)}. Each becomes a 60 s observation candidate.`}
+function cnt(id,n){const e=$(id);let i=0;const t=setInterval(()=>{e.textContent=Math.round(n*(++i/30));if(i>=30)clearInterval(t)},30)}
+// ---------- UI ----------
+$("tabs").onclick=e=>{const t=e.target.dataset.t;if(!t)return;document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t==t));document.querySelectorAll(".tp").forEach(p=>p.classList.toggle("on",p.id==t));draw()};
+function fit(c){const d=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;const x=c.getContext("2d");x.scale(d,d);x.w=w;x.h=h;return x}
+const mapImg=new Image();mapImg.crossOrigin="anonymous";mapImg.src="https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg";
+function drawMap(){const x=fit($("map")),W=x.w,H=x.h,X=l=>(l+180)/360*W,Y=l=>(90-l)/180*H;x.fillStyle="#020a12";x.fillRect(0,0,W,H);
+ if(mapImg.complete&&mapImg.naturalWidth){x.globalAlpha=.45;x.drawImage(mapImg,0,0,W,H);x.globalAlpha=1}
+ x.strokeStyle="#16d9ff22";for(let l=-180;l<=180;l+=30){x.beginPath();x.moveTo(X(l),0);x.lineTo(X(l),H);x.stroke()}for(let l=-90;l<=90;l+=30){x.beginPath();x.moveTo(0,Y(l));x.lineTo(W,Y(l));x.stroke()}
+ const now=Date.now();SATS.forEach(s=>{const col=hex(s.c);x.strokeStyle=col;x.lineWidth=1.3;x.beginPath();let pl=null;
+  for(let m=-45;m<=45;m+=1){const q=geo(s,now+m*6e4);if(!q)continue;const px=X(q.lon),py=Y(q.lat);if(pl===null||Math.abs(q.lon-pl)>180)x.moveTo(px,py);else x.lineTo(px,py);pl=q.lon}x.stroke();
+  const c=geo(s,now);if(!c)return;const el=10*D,rad=(Math.acos(Re*Math.cos(el)/(Re+c.alt))-el)/D;x.strokeStyle=col+"88";x.beginPath();x.ellipse(X(c.lon),Y(c.lat),rad/360*W,rad/180*H,0,0,7);x.stroke();
+  x.fillStyle=col;x.shadowColor=col;x.shadowBlur=12;x.beginPath();x.arc(X(c.lon),Y(c.lat),5,0,7);x.fill();x.shadowBlur=0;x.font="11px Share Tech Mono";x.fillText(s.n,X(c.lon)+9,Y(c.lat)-7)});
+ TG.forEach(t=>{x.fillStyle=t[0]==active?"#ff3d9a":"#ffffffcc";x.fillRect(X(t[3])-3,Y(t[2])-3,6,6);x.font="10px Share Tech Mono";x.fillText(t[0],X(t[3])+6,Y(t[2])+3)})}
+function drawGantt(){const x=fit($("gantt")),W=x.w,H=x.h,L=110,rh=(H-30)/5,t0=Date.now()-(Date.now()-T0)%1;x.font="11px Share Tech Mono";const base=WN.length?Math.min(...WN.map(w=>w.a)):Date.now();
+ SATS.forEach((s,i)=>{x.fillStyle=hex(s.c);x.fillText(s.n,6,i*rh+rh/2+4);x.fillStyle="#0a2236";x.fillRect(L,i*rh+6,W-L-8,rh-12)});
+ for(let h=0;h<=6;h++){const px=L+(W-L-8)*h/6;x.fillStyle="#5c8399";x.fillText("+"+h+"h",px-8,H-8);x.strokeStyle="#143a55";x.beginPath();x.moveTo(px,0);x.lineTo(px,H-24);x.stroke()}
+ WN.forEach(w=>{const a=L+(W-L-8)*(w.a-base)/216e5,b=L+(W-L-8)*(w.b-base)/216e5;x.fillStyle=w.ti==TG.findIndex(t=>t[0]==active)?"#ff3d9a":hex(SATS[w.si].c)+"cc";x.fillRect(a,w.si*rh+9,Math.max(3,b-a),rh-18);x.fillStyle="#000";x.font="9px Share Tech Mono";if(b-a>26)x.fillText(TG[w.ti][0],a+3,w.si*rh+rh/2+3)})}
+function drawGraph(){const x=fit($("graph")),W=x.w,H=x.h,n=WN.length,cx=W/2,cy=H/2,r=Math.min(W,H)/2-30,P=WN.map((_,i)=>[cx+r*Math.cos(i/n*6.283),cy+r*Math.sin(i/n*6.283)]);
+ x.strokeStyle="#ff3d9a66";CF.forEach(([a,b])=>{x.beginPath();x.moveTo(...P[a]);x.lineTo(...P[b]);x.stroke()});
+ WN.forEach((w,i)=>{x.fillStyle=hex(SATS[w.si].c);x.shadowColor=x.fillStyle;x.shadowBlur=8;x.beginPath();x.arc(...P[i],5,0,7);x.fill();x.shadowBlur=0});
+ x.fillStyle="#d8ecf7";x.font="14px Share Tech Mono";x.textAlign="center";x.fillText(`${n} candidates · ${CF.length} conflicts`,cx,cy);x.textAlign="left"}
+function cards(){const now=Date.now();$("cards").innerHTML=SATS.map(s=>{const q=geo(s,now);return`<div class="pn sc"><h3 style="color:${hex(s.c)}">${s.n}</h3><div class="note">NORAD ${s.id} · ${s.omm?"EPOCH "+s.omm.EPOCH.slice(0,16)+"Z":"PREVIEW ORBIT"}</div><div class="tl"><div>ALTITUDE<span>${f(q&&q.alt,1)} km</span></div><div>SPEED<span>${f(q&&q.v,2)} km/s</span></div><div>LATITUDE<span>${f(q&&q.lat,3)}°</span></div><div>LONGITUDE<span>${f(q&&q.lon,3)}°</span></div><div>PERIOD<span>${f(q&&q.per,1)} min</span></div><div>INCLINATION<span>${s.omm?f(s.omm.INCLINATION,2):f(s.inc,2)}°</span></div></div></div>`}).join("")}
+function draw(){if($("t2").classList.contains("on"))drawMap();if($("t3").classList.contains("on"))drawGantt();if($("t4").classList.contains("on"))drawGraph()}
+function steps(){const S=[["REAL ORBITS","CelesTrak OMM, SGP4",SATS.length+" spacecraft"],["ACCESS","Elevation ≥ 10°, 6 h horizon",WN.length+" windows"],["CANDIDATES","60 s observations",WN.length+" candidates"],["CONFLICTS","Overlap & redundancy",CF.length+" conflicts"],["QUBO","Binary variables x",WN.length+" variables"],["QAOA","Qiskit, run on demand","via /api/optimize"],["VALIDATE","Independent validator","feasible or violations"]];
+ $("steps").innerHTML=S.map((s,i)=>`<div class="pn step ${i==5?"q":""}"><b>${i+1}</b><h4>${s[0]}</h4><p>${s[1]}</p><em>${s[2]}</em></div>`).join("")}
+function buildChips(){$("tchips").innerHTML=TG.map(t=>`<span class="chip" data-id="${t[0]}">${t[1].toUpperCase()}</span>`).join("")}
+$("tchips").onclick=async e=>{const id=e.target.dataset.id;if(!id)return;active=id;document.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",c.dataset.id==id));$("run").disabled=false;markTargets();
+ const ti=TG.findIndex(t=>t[0]==id);$("opps").innerHTML=SATS.map((s,si)=>{const w=WN.filter(x=>x.si==si&&x.ti==ti);return`<div class="row"><span style="color:${hex(s.c)}">${s.n}</span><b>${w.length?w.slice(0,2).map(x=>`${utc(x.a)}–${utc(x.b)} · ${f(x.mx,0)}° max`).join("<br>"):'<span class="warn">NO VALID WINDOW</span>'}</b></div>`}).join("");
+ try{await fetch("/api/targets/"+id+"/lock",{method:"POST"})}catch(_){}};
+$("run").onclick=async()=>{$("run").disabled=true;$("onote").textContent="Running…";try{let r=await(await fetch("/api/optimize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target_id:active})})).json();
+ for(let i=0;i<60&&r.job_id&&!(r.selected_candidates||r.selected);i++){await new Promise(t=>setTimeout(t,1500));r=await(await fetch("/api/optimization/"+r.job_id)).json()}show(r)}
+ catch(e){$("onote").innerHTML='<span class="warn">Optimizer unreachable. No values are fabricated. Serve this page from the Q-SCOPE backend (/ui/) with /api/optimize running.</span>';$("run").disabled=false}};
+function show(r){const sel=r.selected_candidates||r.selected||[],q=r.qaoa||{},c=r.classical||{},v=r.validation||q.validation||{},ok=v.feasible??q.feasible,row=(a,b,k="")=>`<div class="row"><span>${a}</span><b class="${k}">${b}</b></div>`;$("onote").textContent="Complete.";$("run").disabled=false;
+ $("mis").innerHTML=(sel.length?sel.map(s=>row("SPACECRAFT",g(s,"satellite_name","name"))+row("NORAD",g(s,"norad_id"))+row("WINDOW",utc(new Date(g(s,"start","start_time")))+" → "+utc(new Date(g(s,"end","end_time"))))+row("PRIORITY / ENERGY",g(s,"priority")+" / "+g(s,"energy","energy_cost"))).join(""):row("RESULT","NO FEASIBLE WINDOW","bad"))+row("OBJECTIVE",g(q,"objective"))+row("VALIDATION",ok==null?"N/A":ok?"FEASIBLE ✓":"INFEASIBLE ✕",ok?"ok":"bad");
+ $("qa").innerHTML=row("VARIABLES",g(q,"n_variables","qubo_variables"))+row("DEPTH p",g(q,"reps","p"))+row("SHOTS",g(q,"shots"))+row("OPTIMIZER",g(q,"optimizer"))+row("ITERATIONS",g(q,"iterations","nfev"))+row("BITSTRING",`<span style="word-break:break-all">${g(q,"bitstring","best_bitstring")}</span>`);
+ const cm=(a,k,...z)=>`<tr><td>${a}</td><td>${g(c,k,...z)}</td><td>${g(q,k,...z)}</td></tr>`;$("cmp").innerHTML=`<table><tr><th></th><th>CLASSICAL</th><th>QAOA</th></tr>${cm("Selected","n_selected")}${cm("Objective","objective")}${cm("Feasible","feasible")}${cm("Violations","violations")}${cm("Runtime s","runtime_s","runtime")}</table><p class="note">Feasible schedule validated against the same constraints. No quantum advantage is claimed.</p>`;
+ $("tl6").innerHTML="";const now=Date.now();sel.forEach(s=>{const a=new Date(g(s,"start","start_time")).getTime(),b=new Date(g(s,"end","end_time")).getTime();if(isNaN(a))return;const d=document.createElement("div");d.style.left=Math.max(0,(a-now)/216e5*100)+"%";d.style.width=Math.max(1.5,(b-a)/216e5*100)+"%";d.textContent=g(s,"satellite_name","name");$("tl6").appendChild(d)});
+ PD=sel[0]?Number(g(sel[0],"norad_id")):null;$("go").disabled=!(sel.length&&ok!==false)}
+$("go").onclick=()=>{const st=["PLANNED","ASSIGNED","APPROACHING","TARGET IN VIEW","OBSERVATION","DATA CAPTURED","DOWNLINK","COMPLETED"];let i=0;$("go").disabled=true;const t=setInterval(()=>{$("exe").innerHTML=`<span class="warn">SIMULATION</span> ${st[i]} (${i+1}/${st.length}). Orbits are real propagation. These states are an animation, not spacecraft commanding.`;if(++i>=st.length){clearInterval(t);$("go").disabled=false}},1300)};
+// ---------- 3D ----------
+const cv=$("bg"),ren=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));
+const sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(38,1,.1,3000);sc.add(new THREE.AmbientLight(0x6f98b0,1.2));const sun=new THREE.DirectionalLight(0xffffff,2.8);sun.position.set(60,25,40);sc.add(sun);
+const eg=new THREE.Group(),og=new THREE.Group(),sg=new THREE.Group(),tk=new THREE.Group();sc.add(eg,og,sg,tk);
+const sv=(lat,lon,r)=>new THREE.Vector3(r*Math.cos(lat*D)*Math.cos(lon*D),r*Math.sin(lat*D),-r*Math.cos(lat*D)*Math.sin(lon*D));
+const TL=new THREE.TextureLoader(),PL="https://threejs.org/examples/textures/planets/",Y=new THREE.Vector3(0,1,0);
+function sunDir(ms){const n=ms/864e5+2440587.5-2451545,L=(280.46+.9856474*n)*D,gg=(357.528+.9856003*n)*D,lm=L+(1.915*Math.sin(gg)+.02*Math.sin(2*gg))*D,ep=(23.439-4e-7*n)*D;
+ return new THREE.Vector3(Math.cos(lm),Math.sin(ep)*Math.sin(lm),-Math.cos(ep)*Math.sin(lm)).normalize()}
+const uni={day:{value:TL.load(PL+"earth_atmos_2048.jpg")},night:{value:TL.load(PL+"earth_lights_2048.png")},spec:{value:TL.load(PL+"earth_specular_2048.jpg")},sun:{value:new THREE.Vector3(1,0,0)}};
+const earth=new THREE.Mesh(new THREE.SphereGeometry(R,128,128),new THREE.ShaderMaterial({uniforms:uni,
+vertexShader:"varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vV=normalize(cameraPosition-w.xyz);gl_Position=projectionMatrix*viewMatrix*w;}",
+fragmentShader:"uniform sampler2D day,night,spec;uniform vec3 sun;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vec3 n=normalize(vN);float d=dot(n,sun);float t=smoothstep(-.1,.2,d);vec3 dc=texture2D(day,vUv).rgb;vec3 lit=dc*(.18+1.05*max(d,0.));vec3 nt=dc*.05+texture2D(night,vUv).rgb*vec3(1.,.78,.45)*1.5;vec3 col=mix(nt,lit,t);col+=vec3(1.,.4,.12)*exp(-pow(d*7.,2.))*.22;vec3 h=normalize(sun+normalize(vV));col+=vec3(.7,.85,1.)*pow(max(dot(n,h),0.),70.)*texture2D(spec,vUv).r*step(0.,d)*.9;col+=vec3(.1,.5,1.)*pow(1.-max(dot(n,normalize(vV)),0.),3.)*.35*(.3+t);gl_FragColor=vec4(col,1.);}"}));eg.add(earth);
+const clouds=new THREE.Mesh(new THREE.SphereGeometry(R*1.012,96,96),new THREE.MeshPhongMaterial({map:TL.load(PL+"earth_clouds_1024.png"),transparent:true,opacity:.55,depthWrite:false}));eg.add(clouds);
+// real lat/lon graticule: 15° grid, equator amber, prime meridian green
+{const gr=(pts,c,o)=>eg.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:c,transparent:true,opacity:o})));
+ for(let la=-75;la<=75;la+=15){const a=[];for(let lo=0;lo<=360;lo+=4)a.push(sv(la,lo,R*1.003));gr(a,la?0x16d9ff:0xffb454,la?.16:.7)}
+ for(let lo=0;lo<360;lo+=15){const a=[];for(let la=-90;la<=90;la+=4)a.push(sv(la,lo,R*1.003));gr(a,lo?0x16d9ff:0x39ffb0,lo?.16:.7)}}
+sc.add(new THREE.Mesh(new THREE.SphereGeometry(R*1.13,64,64),new THREE.ShaderMaterial({transparent:true,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false,vertexShader:"varying vec3 n;void main(){n=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",fragmentShader:"varying vec3 n;void main(){float i=pow(.72-dot(n,vec3(0,0,1.)),3.);gl_FragColor=vec4(.1,.65,1.,1.)*i*1.7;}"})));
+{const p=[];for(let i=0;i<6000;i++){const r=500+Math.random()*800,a=Math.random()*6.283,b=Math.acos(2*Math.random()-1);p.push(r*Math.sin(b)*Math.cos(a),r*Math.cos(b),r*Math.sin(b)*Math.sin(a))}const gm=new THREE.BufferGeometry();gm.setAttribute("position",new THREE.Float32BufferAttribute(p,3));var stars=new THREE.Points(gm,new THREE.PointsMaterial({color:0xbfe6f5,size:1.4,sizeAttenuation:false,transparent:true,opacity:.8}));sc.add(stars)}
+const ev=p=>new THREE.Vector3(p[0]*K,p[2]*K,-p[1]*K);
+function model(c){const g=new THREE.Group(),M=o=>new THREE.MeshStandardMaterial(o);g.add(new THREE.Mesh(new THREE.BoxGeometry(.5,.4,.65),M({color:0xd7e5ee,metalness:.9,roughness:.25})));g.add(new THREE.Mesh(new THREE.BoxGeometry(.52,.1,.67),M({color:0xc9a227,metalness:1,roughness:.3})).translateY(.2));
+ const pm=M({color:0x1c4f86,emissive:c,emissiveIntensity:.2,metalness:.5,roughness:.3}),fr=new THREE.LineBasicMaterial({color:0x9fd8ff});for(const s of[-1,1])for(let k=0;k<3;k++){const p=new THREE.Mesh(new THREE.BoxGeometry(.62,.025,.48),pm);p.position.set(s*(.95+k*.64),0,0);g.add(p);const e=new THREE.LineSegments(new THREE.EdgesGeometry(p.geometry),fr);e.position.copy(p.position);g.add(e)}
+ g.add(new THREE.Mesh(new THREE.SphereGeometry(.22,16,8,0,6.283,0,1.2),M({color:0xeef6fa,side:2})).translateY(.45));g.add(new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),new THREE.MeshBasicMaterial({color:c})).translateZ(.36));
+ const h=new THREE.Mesh(new THREE.SphereGeometry(.8,16,16),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.1,depthWrite:false}));h.name="h";g.add(h);g.scale.setScalar(1.4);return g}
+const so=SATS.map(s=>{const m=model(s.c);sg.add(m);const l=document.createElement("div");l.className="lab";l.textContent=s.n;$("labs").appendChild(l);return{m,l}});
+const to=TG.map(t=>{const g=new THREE.Group(),p=sv(t[2],t[3],R*1.004);g.position.copy(p);const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),p.clone().normalize());
+ const core=new THREE.Mesh(new THREE.OctahedronGeometry(.17),new THREE.MeshBasicMaterial({color:0x20dfff})),rg=new THREE.Mesh(new THREE.RingGeometry(.28,.36,32),new THREE.MeshBasicMaterial({color:0x20dfff,transparent:true,opacity:.6,side:2}));rg.quaternion.copy(q);g.add(core,rg);eg.add(g);return{g,core,rg}});
+const LB=[];const mkL=(t,la,lo,c)=>{const e=document.createElement("div");e.className="lab "+c;e.textContent=t;$("labs").appendChild(e);LB.push({e,v:sv(la,lo,R*1.004)})};
+[-60,-30,30,60].forEach(a=>mkL(Math.abs(a)+"°"+(a>0?"N":"S"),a,0,"g"));mkL("0°",0,0,"g");for(let o=-150;o<=180;o+=30)if(o)mkL(Math.abs(o)+"°"+(o>0?"E":"W"),0,o,"g");
+TG.forEach(t=>mkL(t[0]+" "+t[2].toFixed(3)+"°N "+t[3].toFixed(3)+"°E",t[2],t[3],"t"));
+function markTargets(){to.forEach((o,i)=>{const a=TG[i][0]==active;o.core.material.color.set(a?0xff3d9a:0x20dfff);o.rg.material.color.set(a?0xff3d9a:0x20dfff)})}
+function buildOrbits(){og.clear();const now=Date.now();SATS.forEach(s=>{const pts=[];for(let m=-45;m<=45;m++){const p=pos(s,now+m*6e4);if(p)pts.push(ev(p))}og.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:s.c,transparent:true,opacity:.55})))})}
+let w_=1,h_=1,cs={th:.9,ph:1.3,r:36},p=0,mx=0;const rc=new THREE.Raycaster(),pv=new THREE.Vector2(9,9),SP=new THREE.Sphere(new THREE.Vector3(),R),HP=new THREE.Vector3(),fl=v=>Math.abs(v).toFixed(3)+"°"+(v>=0?"N":"S"),fo=v=>Math.abs(v).toFixed(3)+"°"+(v>=0?"E":"W");
+addEventListener("pointermove",e=>{mx=e.clientX/innerWidth-.5;pv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1)});
+function loop(){requestAnimationFrame(loop);const w=innerWidth,h=innerHeight;w_=w;h_=h;if(cv.width!=w*ren.getPixelRatio()){ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+ p=scrollY/Math.max(1,document.body.scrollHeight-h);const now=Date.now();cam.setViewOffset(w,h,-w*.2*(1-Math.min(1,p*6)),0,w,h);
+ const tt=.8+p*5+mx*.4,tp=1.35-p*.3,tr=36-p*10;cs.th+=(tt-cs.th)*.05;cs.ph+=(tp-cs.ph)*.05;cs.r+=(tr-cs.r)*.05;
+ cam.position.set(cs.r*Math.sin(cs.ph)*Math.sin(cs.th),cs.r*Math.cos(cs.ph),cs.r*Math.sin(cs.ph)*Math.cos(cs.th));cam.lookAt(0,0,0);
+ eg.rotation.y=gst(now);clouds.rotation.y+=.00004;const sd=sunDir(now);uni.sun.value.copy(sd);sun.position.copy(sd).multiplyScalar(80);
+ rc.setFromCamera(pv,cam);if(rc.ray.intersectSphere(SP,HP)){const l=eg.worldToLocal(HP.clone());$('hLa').textContent=fl(Math.asin(l.y/R)/D);$('hLo').textContent=fo(Math.atan2(-l.z,l.x)/D)}else{$('hLa').textContent=$('hLo').textContent='—'}
+ {const l=sd.clone().applyAxisAngle(Y,-eg.rotation.y);$('sLa').textContent=fl(Math.asin(l.y)/D);$('sLo').textContent=fo(Math.atan2(-l.z,l.x)/D)}
+ LB.forEach(o=>{const w=eg.localToWorld(o.v.clone()),vis=w.dot(cam.position)>R*R*1.02,pr=w.project(cam);o.e.style.display=vis?'block':'none';o.e.style.left=(pr.x+1)/2*w_+'px';o.e.style.top=(1-pr.y)/2*h_+'px'});stars.rotation.y+=.00006;const cd=cam.position.clone().normalize();
+ SATS.forEach((s,i)=>{const q=pos(s,now),o=so[i];if(!q)return;const v=ev(q);o.m.position.copy(v);o.m.lookAt(0,0,0);o.m.rotateX(Math.PI/2);o.m.getObjectByName("h").material.opacity=.1+.08*Math.sin(now/400+i);
+  const d=v.dot(cd),hid=d<0&&v.clone().addScaledVector(cd,-d).length()<R,pr=v.clone().project(cam);o.l.style.display=hid?"none":"block";o.l.style.left=(pr.x+1)/2*w+"px";o.l.style.top=(1-pr.y)/2*h+"px"});
+ tk.clear();const ti=TG.findIndex(t=>t[0]==active);if(ti>=0){const best=WN.filter(x=>x.ti==ti&&x.a<=now+36e5).sort((a,b)=>b.mx-a.mx)[0],si=PD?SATS.findIndex(s=>s.id==PD):best?best.si:-1;
+  if(si>=0)tk.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([so[si].m.position,to[ti].g.getWorldPosition(new THREE.Vector3())]),new THREE.LineBasicMaterial({color:0xff3d9a})))}
+ to.forEach((o,i)=>o.rg.scale.setScalar(1+.2*Math.sin(now/300+i)));ren.render(sc,cam)}
+setInterval(()=>{$("clk").textContent=new Date().toISOString().slice(11,19);if($("t1").classList.contains("on"))cards();draw()},1000);setInterval(()=>buildOrbits(),3e5);
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add("in")),{threshold:.1});document.querySelectorAll(".rv").forEach(e=>io.observe(e));
+loop();load().then(cards);
+</script></body></html>

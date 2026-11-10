@@ -1,0 +1,180 @@
+targets:
+  - id: TGT-01
+    name: Hyderabad
+    latitude_deg: 17.3850
+    longitude_deg: 78.4867
+    priority: 10
+    observation_duration_sec: 120
+    data_size_mb: 800
+    deadline_hours: 6
+
+  - id: TGT-02
+    name: Bengaluru
+    latitude_deg: 12.9716
+    longitude_deg: 77.5946
+    priority: 9
+    observation_duration_sec: 90
+    data_size_mb: 600
+    deadline_hours: 8
+
+  - id: TGT-03
+    name: Chennai
+    latitude_deg: 13.0827
+    longitude_deg: 80.2707
+    priority: 8
+    observation_duration_sec: 150
+    data_size_mb: 1200
+    deadline_hours: 12
+
+  - id: TGT-04
+    name: Mumbai
+    latitude_deg: 19.0760
+    longitude_deg: 72.8777
+    priority: 9
+    observation_duration_sec: 120
+    data_size_mb: 900
+    deadline_hours: 6
+
+  - id: TGT-05
+    name: Delhi
+    latitude_deg: 28.6139
+    longitude_deg: 77.2090
+    priority: 10
+    observation_duration_sec: 180
+    data_size_mb: 1500
+    deadline_hours: 4
+
+  - id: TGT-06
+    name: Kolkata
+    latitude_deg: 22.5726
+    longitude_deg: 88.3639
+    priority: 8
+    observation_duration_sec: 90
+    data_size_mb: 700
+    deadline_hours: 10
+
+  - id: TGT-07
+    name: Ahmedabad
+    latitude_deg: 23.0225
+    longitude_deg: 72.5714
+    priority: 7
+    observation_duration_sec: 120
+    data_size_mb: 500
+    deadline_hours: 16
+
+  - id: TGT-08
+    name: Pune
+    latitude_deg: 18.5204
+    longitude_deg: 73.8567
+    priority: 8
+    observation_duration_sec: 60
+    data_size_mb: 400
+    deadline_hours: 18
+
+  - id: TGT-09
+    name: Kochi
+    latitude_deg: 9.9312
+    longitude_deg: 76.2673
+    priority: 7
+    observation_duration_sec: 90
+    data_size_mb: 600
+    deadline_hours: 20
+
+  - id: TGT-10
+    name: Jaipur
+    latitude_deg: 26.9124
+    longitude_deg: 75.7873
+    priority: 7
+    observation_duration_sec: 150
+    data_size_mb: 1000
+    deadline_hours: 8
+
+  - id: TGT-11
+    name: Visakhapatnam
+    latitude_deg: 17.6868
+    longitude_deg: 83.2185
+    priority: 8
+    observation_duration_sec: 120
+    data_size_mb: 800
+    deadline_hours: 14
+
+  - id: TGT-12
+    name: Lucknow
+    latitude_deg: 26.8467
+    longitude_deg: 80.9462
+    priority: 8
+    observation_duration_sec: 90
+    data_size_mb: 700
+    deadline_hours: 10
+
+  - id: TGT-13
+    name: Bhopal
+    latitude_deg: 23.2599
+    longitude_deg: 77.4126
+    priority: 6
+    observation_duration_sec: 180
+    data_size_mb: 1100
+    deadline_hours: 22
+
+  - id: TGT-14
+    name: Patna
+    latitude_deg: 25.5941
+    longitude_deg: 85.1376
+    priority: 7
+    observation_duration_sec: 120
+    data_size_mb: 900
+    deadline_hours: 12
+
+  - id: TGT-15
+    name: Nagpur
+    latitude_deg: 21.1458
+    longitude_deg: 79.0882
+    priority: 7
+    observation_duration_sec: 60
+    data_size_mb: 500
+    deadline_hours: 16
+
+  - id: TGT-16
+    name: Surat
+    latitude_deg: 21.1702
+    longitude_deg: 72.8311
+    priority: 6
+    observation_duration_sec: 150
+    data_size_mb: 1300
+    deadline_hours: 20
+
+  - id: TGT-17
+    name: Coimbatore
+    latitude_deg: 11.0168
+    longitude_deg: 76.9558
+    priority: 6
+    observation_duration_sec: 90
+    data_size_mb: 600
+    deadline_hours: 24
+
+  - id: TGT-18
+    name: Bhubaneswar
+    latitude_deg: 20.2961
+    longitude_deg: 85.8245
+    priority: 7
+    observation_duration_sec: 120
+    data_size_mb: 800
+    deadline_hours: 14
+
+  - id: TGT-19
+    name: Guwahati
+    latitude_deg: 26.1445
+    longitude_deg: 91.7362
+    priority: 6
+    observation_duration_sec: 180
+    data_size_mb: 1400
+    deadline_hours: 18
+
+  - id: TGT-20
+    name: Srinagar
+    latitude_deg: 34.0837
+    longitude_deg: 74.7973
+    priority: 6
+    observation_duration_sec: 120
+    data_size_mb: 1000
+    deadline_hours: 22

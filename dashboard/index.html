@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q-SCOPE | Quantum Satellite Optimizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--c:#16d9ff;--g:#39ffb0;--k:#ff3d9a;--o:#ffb454;--v:#b47cff;--b:#143a55;--m:#7aa3b8;--bg:#010409}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:#d8ecf7;font:14px Rajdhani,sans-serif}
+body:after{content:"";position:fixed;inset:0;z-index:50;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#16d9ff06 2px 3px)}
+
+/* ── LAYOUT ── */
+#shell{display:flex;height:100vh;width:100vw}
+#left{width:420px;min-width:420px;height:100vh;overflow-y:auto;overflow-x:hidden;background:linear-gradient(180deg,#020c18f5,#010409f5);border-right:1px solid #1d3a52;z-index:10;display:flex;flex-direction:column;gap:0}
+#right{flex:1;position:relative;overflow:hidden}
+#globe{width:100%;height:100%;display:block}
+
+/* scrollbar */
+#left::-webkit-scrollbar{width:4px}
+#left::-webkit-scrollbar-track{background:#010409}
+#left::-webkit-scrollbar-thumb{background:#1d3a52}
+
+/* ── NAV ── */
+#topbar{padding:12px 16px;border-bottom:1px solid #1d3a52;background:#020c18;display:flex;align-items:center;gap:10px;flex-shrink:0}
+#topbar b{font:800 16px Orbitron;color:var(--c);letter-spacing:4px;text-shadow:0 0 12px #16d9ff66}
+#topbar .utc{font:11px 'Share Tech Mono';color:var(--m);margin-left:auto}
+#topbar .dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px var(--g);animation:pl 1.6s infinite}
+@keyframes pl{50%{opacity:.3}}
+
+/* ── SECTION BLOCKS ── */
+.blk{padding:12px 14px;border-bottom:1px solid #0e2a3d}
+.blk-title{font:11px 'Share Tech Mono';letter-spacing:2px;color:var(--c);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.blk-title span{flex:1}
+.blk-title small{font-size:9px;color:var(--m)}
+
+/* ── STAT GRID ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.stat{background:#04101bcc;border:1px solid #1a3a52;padding:8px 10px;position:relative}
+.stat:before,.stat:after{content:"";position:absolute;width:6px;height:6px;border:1px solid var(--c)}
+.stat:before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.stat:after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.stat b{display:block;font:700 18px Orbitron;color:#fff;text-shadow:0 0 8px var(--c)}
+.stat small{font:9px 'Share Tech Mono';letter-spacing:1px;color:var(--m)}
+
+/* ── SAT CARDS ── */
+.sat-card{background:#04101bcc;border:1px solid #1a3a52;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:.15s}
+.sat-card:hover,.sat-card.active{border-color:var(--c);background:#0a2030cc}
+.sat-card.active{border-color:var(--k)}
+.sat-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.sat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sat-name{font:700 13px Rajdhani;letter-spacing:1px}
+.sat-id{font:10px 'Share Tech Mono';color:var(--m);margin-left:auto}
+.sat-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;font:10px 'Share Tech Mono'}
+.sat-grid .lbl{color:var(--m)}
+.sat-grid .val{color:#d8f4ff}
+.bar-wrap{margin-top:4px}
+.bar-label{display:flex;justify-content:space-between;font:9px 'Share Tech Mono';color:var(--m);margin-bottom:2px}
+.bar{height:3px;background:#0a2030;border-radius:2px}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s}
+
+/* ── TARGETS ── */
+.tgt-chip{display:inline-block;font:10px 'Share Tech Mono';letter-spacing:1px;color:var(--c);background:#04101b;border:1px solid #1d5a7a;padding:4px 8px;margin:2px;cursor:pointer;transition:.15s}
+.tgt-chip:hover{box-shadow:0 0 10px #16d9ff33}
+.tgt-chip.active{border-color:var(--k);color:var(--k);background:#2a0c20}
+
+/* ── MISSION PARAMS ── */
+.param-row{display:flex;justify-content:space-between;padding:4px 0;border-top:1px solid #0e2a3d;font:11px 'Share Tech Mono';color:var(--m)}
+.param-row b{color:#d8f4ff;font-weight:400}
+
+/* ── BUTTONS ── */
+.btn{font:12px 'Share Tech Mono';letter-spacing:2px;color:var(--g);background:#04101b;border:1px solid var(--g);padding:10px 16px;cursor:pointer;transition:.2s;width:100%}
+.btn:hover:not(:disabled){box-shadow:0 0 16px #39ffb044;background:#0a2030}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.danger{color:var(--k);border-color:var(--k)}
+
+/* ── RESULTS ── */
+.res-row{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid #0e2a3d;font:11px 'Share Tech Mono';color:var(--m)}
+.res-row b{color:#d8f4ff;font-weight:400;text-align:right;max-width:60%}
+.ok{color:var(--g)!important}.bad{color:var(--k)!important}.warn{color:var(--o)!important}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin-bottom:8px}
+.tab{font:10px 'Share Tech Mono';letter-spacing:1px;color:var(--m);background:#04101b;border:1px solid #1d3a52;padding:5px 10px;cursor:pointer;transition:.15s}
+.tab.on{border-color:var(--c);color:var(--c);background:#0a2030}
+.tp{display:none}.tp.on{display:block}
+
+/* ── LOG ── */
+#log{font:10px/1.6 'Share Tech Mono';color:#5c8399;max-height:100px;overflow-y:auto;padding:4px 0}
+#log div{padding:1px 0}
+#log .ok{color:var(--g)}#log .warn{color:var(--o)}#log .bad{color:var(--k)}
+
+/* ── GLOBE OVERLAY ── */
+#globe-hud{position:absolute;top:14px;right:14px;z-index:5;font:10px 'Share Tech Mono';color:#bfeaff;pointer-events:none}
+#globe-hud .hw{background:#020c18cc;border:1px solid #1d3a52;padding:8px 10px;margin-bottom:6px}
+#globe-hud .hw .lbl{color:var(--m);font-size:9px;letter-spacing:1px}
+#globe-hud .hw b{color:var(--c)}
+#labs{position:absolute;inset:0;pointer-events:none;z-index:4}
+.lab{position:absolute;font:9px 'Share Tech Mono';color:#bfeaff;white-space:nowrap;transform:translate(10px,-6px);border-left:1px solid var(--c);padding-left:5px;text-shadow:0 0 6px #000}
+.lab.tgt{color:#ff9ccc;border-color:var(--k)}
+
+/* ── GANTT ── */
+#gantt-wrap{position:relative;height:28px;border:1px solid var(--b);background:repeating-linear-gradient(90deg,#0a2236 0 1px,#0000 1px 10%);margin-top:6px}
+#gantt-wrap div{position:absolute;top:3px;bottom:3px;background:#39ffb066;border:1px solid var(--g);font:8px 'Share Tech Mono';color:var(--g);overflow:hidden;white-space:nowrap;padding:0 2px}
+
+/* ── CIRCUIT SVG ── */
+#circuit-view svg{height:300px;width:auto;display:block;flex-shrink:0}
+
+/* ── SCROLLABLE SAT LIST ── */
+#sat-list{max-height:320px;overflow-y:auto;padding-right:2px}
+#sat-list::-webkit-scrollbar{width:3px}
+#sat-list::-webkit-scrollbar-thumb{background:#1d3a52}
+</style>
+</head>
+<body>
+
+<div id="shell">
+
+  <!-- ═══ LEFT PANEL ═══ -->
+  <div id="left">
+
+    <!-- topbar -->
+    <div id="topbar">
+      <div class="dot"></div>
+      <b>Q-SCOPE</b>
+      <span style="font:10px 'Share Tech Mono';color:var(--m)">QUANTUM SATELLITE OPTIMIZER</span>
+      <span class="utc" id="clk">--:--:-- UTC</span>
+    </div>
+
+    <!-- mission stats -->
+    <div class="blk">
+      <div class="blk-title"><span>MISSION OVERVIEW</span></div>
+      <div class="stat-row">
+        <div class="stat"><b id="st-sats">--</b><small>SPACECRAFT</small></div>
+        <div class="stat"><b id="st-tgts">--</b><small>TARGETS</small></div>
+        <div class="stat"><b id="st-dur">--</b><small>DURATION H</small></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b id="st-elev">--</b><small>MIN ELEV °</small></div>
+        <div class="stat"><b id="st-nadir">--</b><small>MAX NADIR °</small></div>
+        <div class="stat"><b id="st-depth">--</b><small>QAOA DEPTH</small></div>
+      </div>
+    </div>
+
+    <!-- mission params -->
+    <div class="blk">
+      <div class="blk-title"><span>MISSION PARAMETERS</span></div>
+      <div id="mission-params"></div>
+    </div>
+
+    <!-- tabs: constellation / targets -->
+    <div class="blk" style="flex-shrink:0">
+      <div class="tabs">
+        <div class="tab on" data-t="t-sats">CONSTELLATION</div>
+        <div class="tab" data-t="t-tgts">TARGETS</div>
+        <div class="tab" data-t="t-windows">WINDOWS</div>
+      </div>
+
+      <!-- satellite cards -->
+      <div class="tp on" id="t-sats">
+        <div id="sat-list"></div>
+      </div>
+
+      <!-- target chips -->
+      <div class="tp" id="t-tgts">
+        <div id="tgt-chips" style="margin-bottom:8px"></div>
+        <div id="tgt-detail" style="font:10px 'Share Tech Mono';color:var(--m)">Select a target to see details.</div>
+      </div>
+
+      <!-- access windows -->
+      <div class="tp" id="t-windows">
+        <div id="win-summary" style="font:10px 'Share Tech Mono';color:var(--m);margin-bottom:6px">Run analysis to see windows.</div>
+        <div id="win-list" style="max-height:200px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+    <!-- optimizer -->
+    <div class="blk">
+      <div class="blk-title"><span>OPTIMIZER CONTROL</span></div>
+      <div id="opt-params" style="margin-bottom:8px"></div>
+      <div style="margin-bottom:6px;font:10px 'Share Tech Mono';color:var(--m)">
+        Target: <span id="opt-target" style="color:var(--c)">ALL</span>
+      </div>
+      <button class="btn" id="btn-run">RUN HYBRID OPTIMIZATION</button>
+      <div id="opt-status" style="font:10px 'Share Tech Mono';color:var(--m);margin-top:6px;min-height:16px"></div>
+    </div>
+
+    <!-- results -->
+    <div class="blk" id="results-blk" style="display:none">
+      <div class="blk-title"><span>OPTIMIZATION RESULTS</span></div>
+
+      <div class="tabs">
+        <div class="tab on" data-t="r-cmp">COMPARISON</div>
+        <div class="tab" data-t="r-qaoa">QAOA</div>
+        <div class="tab" data-t="r-sched">SCHEDULE</div>
+        <div class="tab" data-t="r-circuit">CIRCUIT</div>
+        <div class="tab" data-t="r-qubo">QUBO</div>
+      </div>
+
+      <div class="tp on" id="r-cmp">
+        <div id="res-comparison"></div>
+      </div>
+      <div class="tp" id="r-qaoa">
+        <div id="res-qaoa"></div>
+      </div>
+      <div class="tp" id="r-sched">
+        <div id="res-schedule"></div>
+        <div id="gantt-wrap" style="display:none"></div>
+      </div>
+      <div class="tp" id="r-circuit">
+        <div id="circuit-meta" style="margin-bottom:8px;flex-wrap:wrap;display:flex;gap:4px"></div>
+        <div id="circuit-view" style="width:100%;overflow-x:auto;overflow-y:hidden;background:#020a12;border:1px solid #1d3a52;padding:6px;height:316px;display:flex;align-items:center">
+          <span style="font:10px 'Share Tech Mono';color:var(--m)">Run optimization to generate circuit.</span>
+        </div>
+      </div>
+      <div class="tp" id="r-qubo">
+        <div id="qubo-meta" style="margin-bottom:6px;font:10px 'Share Tech Mono';color:var(--m)">Run optimization to generate QUBO matrix.</div>
+        <div style="overflow-x:auto">
+          <canvas id="qubo-canvas" style="display:none;image-rendering:pixelated"></canvas>
+        </div>
+        <div id="qubo-labels" style="margin-top:6px;font:9px 'Share Tech Mono';color:var(--m);word-break:break-all"></div>
+      </div>
+    </div>
+
+    <!-- log -->
+    <div class="blk" style="flex-shrink:0">
+      <div class="blk-title"><span>SYSTEM LOG</span></div>
+      <div id="log"></div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- ═══ RIGHT: GLOBE ═══ -->
+  <div id="right">
+    <canvas id="globe"></canvas>
+    <div id="labs"></div>
+    <div id="globe-hud">
+      <div class="hw">
+        <div class="lbl">CURSOR</div>
+        <div>LAT <b id="hLa">—</b> &nbsp; LON <b id="hLo">—</b></div>
+      </div>
+      <div class="hw">
+        <div class="lbl">ACTIVE TARGET</div>
+        <div id="hTgt" style="color:var(--k)">NONE</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const D=Math.PI/180;
+const SAT_COLORS=['#16d9ff','#ff4da6','#ffb84d','#72ff86','#b47cff','#ff6b35','#00e5ff','#ff3d9a','#39ffb0','#ffd700'];
+let CFG=null, activeTgt=null, satPositions=[], lastResult=null, _last_qaoa_meta_js=null;
+
+// ── LOG ──
+function log(msg,cls=''){
+  const d=document.createElement('div');
+  d.innerHTML=`<span style="color:var(--c)">›</span> ${msg}`;
+  if(cls)d.className=cls;
+  $('log').appendChild(d);
+  $('log').scrollTop=1e9;
+}
+
+// ── CLOCK ──
+setInterval(()=>{ $('clk').textContent=new Date().toISOString().slice(11,19)+' UTC'; },500);
+
+// ── TABS ──
+document.addEventListener('click',e=>{
+  const tab=e.target.closest('.tab');
+  if(!tab)return;
+  const parent=tab.parentElement;
+  const t=tab.dataset.t;
+  if(!t)return;
+  parent.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===tab));
+  // find sibling tp panels
+  const blk=parent.closest('.blk')||parent.parentElement;
+  blk.querySelectorAll('.tp').forEach(p=>p.classList.toggle('on',p.id===t));
+});
+
+// ── FETCH CONFIG ──
+async function loadConfig(){
+  log('Loading mission configuration…');
+  try{
+    const r=await fetch('/api/config');
+    CFG=await r.json();
+    renderMissionStats();
+    renderMissionParams();
+    renderSatCards();
+    renderTargetChips();
+    renderOptParams();
+    log(`Config loaded: ${CFG.satellites.length} satellites, ${CFG.targets.length} targets`,'ok');
+  }catch(e){
+    log('Failed to load config: '+e.message,'bad');
+  }
+}
+
+function renderMissionStats(){
+  $('st-sats').textContent=CFG.satellites.length;
+  $('st-tgts').textContent=CFG.targets.length;
+  $('st-dur').textContent=CFG.mission.duration_hours;
+  $('st-elev').textContent=CFG.mission.min_elevation_deg;
+  $('st-nadir').textContent=CFG.mission.max_off_nadir_deg;
+  $('st-depth').textContent=CFG.mission.qaoa_depth;
+}
+
+function renderMissionParams(){
+  const m=CFG.mission, s=m.scoring;
+  const rows=[
+    ['Mission',m.name],
+    ['Time Step',m.time_step_seconds+' s'],
+    ['Min Battery Reserve',m.min_battery_reserve_pct+'%'],
+    ['QAOA Shots',m.shots],
+    ['Max Candidates',m.max_candidates],
+    ['Weight: Task Value',s.task_value_weight],
+    ['Weight: Image Quality',s.image_quality_weight],
+    ['Weight: Future Value',s.future_value_weight],
+    ['Weight: Energy',s.energy_weight],
+    ['Weight: Slew',s.slew_weight],
+    ['Weight: Data',s.data_weight],
+  ];
+  $('mission-params').innerHTML=rows.map(([k,v])=>
+    `<div class="param-row"><span>${k}</span><b>${v}</b></div>`
+  ).join('');
+}
+
+function renderSatCards(){
+  $('sat-list').innerHTML=CFG.satellites.map((s,i)=>{
+    const col=SAT_COLORS[i%SAT_COLORS.length];
+    const batPct=Math.round(s.initial_battery_wh/s.battery_capacity_wh*100);
+    const stoPct=Math.round(s.initial_storage_gb/s.storage_capacity_gb*100);
+    return `<div class="sat-card" data-id="${s.id}" id="card-${s.id}">
+      <div class="sat-head">
+        <div class="sat-dot" style="background:${col};box-shadow:0 0 6px ${col}"></div>
+        <span class="sat-name" style="color:${col}">${s.name}</span>
+        <span class="sat-id">${s.id}</span>
+      </div>
+      <div class="sat-grid">
+        <span class="lbl">ALT</span><span class="val" id="${s.id}-alt">${s.altitude_km} km</span>
+        <span class="lbl">LAT</span><span class="val" id="${s.id}-lat">--</span>
+        <span class="lbl">LON</span><span class="val" id="${s.id}-lon">--</span>
+        <span class="lbl">VEL</span><span class="val" id="${s.id}-vel">--</span>
+        <span class="lbl">PERIOD</span><span class="val" id="${s.id}-per">--</span>
+        <span class="lbl">SLEW</span><span class="val">${s.slew_rate_deg_per_sec} °/s</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>BATTERY</span><span id="${s.id}-bat">${batPct}%</span></div>
+        <div class="bar"><div class="bar-fill" id="${s.id}-batbar" style="width:${batPct}%;background:${batPct>50?'var(--g)':batPct>20?'var(--o)':'var(--k)'}"></div></div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>STORAGE USED</span><span id="${s.id}-sto">${stoPct}%</span></div>
+        <div class="bar"><div class="bar-fill" id="${s.id}-stobar" style="width:${stoPct}%;background:var(--c)"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTargetChips(){
+  $('tgt-chips').innerHTML=CFG.targets.map(t=>
+    `<span class="tgt-chip" data-id="${t.id}">${t.name.toUpperCase()}</span>`
+  ).join('');
+  $('tgt-chips').onclick=e=>{
+    const chip=e.target.closest('.tgt-chip');
+    if(!chip)return;
+    const id=chip.dataset.id;
+    activeTgt=activeTgt===id?null:id;
+    document.querySelectorAll('.tgt-chip').forEach(c=>c.classList.toggle('active',c.dataset.id===activeTgt));
+    $('opt-target').textContent=activeTgt||'ALL';
+    $('hTgt').textContent=activeTgt?CFG.targets.find(t=>t.id===activeTgt)?.name||activeTgt:'NONE';
+    renderTargetDetail(activeTgt);
+    markActiveTarget();
+  };
+}
+
+function renderTargetDetail(id){
+  if(!id){$('tgt-detail').textContent='Select a target to see details.';return;}
+  const t=CFG.targets.find(x=>x.id===id);
+  if(!t)return;
+  $('tgt-detail').innerHTML=[
+    ['ID',t.id],['Name',t.name],
+    ['Latitude',t.lat.toFixed(4)+'°'],['Longitude',t.lon.toFixed(4)+'°'],
+    ['Priority',t.priority],['Obs Duration',t.observation_duration_sec+' s'],
+    ['Data Size',t.data_size_mb+' MB'],['Deadline',t.deadline_hours+' h'],
+  ].map(([k,v])=>`<div class="param-row"><span>${k}</span><b>${v}</b></div>`).join('');
+}
+
+function renderOptParams(){
+  const m=CFG.mission;
+  $('opt-params').innerHTML=[
+    ['QAOA Depth',m.qaoa_depth],
+    ['Shots',m.shots],
+    ['Max Candidates',m.max_candidates],
+    ['Backend','local'],
+  ].map(([k,v])=>`<div class="param-row"><span>${k}</span><b>${v}</b></div>`).join('');
+}
+
+// ── LIVE POSITIONS ──
+async function loadQubo(){
+  try{
+    const r=await fetch('/api/qubo');
+    if(!r.ok)return;
+    const d=await r.json();
+    const n=d.n, mat=d.matrix;
+    $('qubo-meta').innerHTML=
+      `<b style="color:var(--c)">${n}×${n}</b> QUBO matrix &nbsp;·&nbsp; penalty <b style="color:var(--o)">${d.penalty.toFixed(4)}</b>`;
+
+    // find min/max for colour scaling
+    let mn=Infinity, mx=-Infinity;
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++){const v=mat[i][j];if(v<mn)mn=v;if(v>mx)mx=v;}
+
+    const cell=Math.max(24, Math.min(48, Math.floor(360/n)));
+    const cv=$('qubo-canvas');
+    cv.width=n*cell; cv.height=n*cell;
+    cv.style.width=(n*cell)+'px'; cv.style.height=(n*cell)+'px';
+    cv.style.display='block';
+    const ctx=cv.getContext('2d');
+
+    // white background
+    ctx.fillStyle='#f5f7fa';
+    ctx.fillRect(0,0,n*cell,n*cell);
+
+    for(let i=0;i<n;i++){
+      for(let j=0;j<n;j++){
+        const v=mat[i][j];
+        let color;
+        if(v<0){
+          const t=Math.min(1, v/mn);
+          color=`rgba(39,199,111,${0.15+t*0.45})`; // dim green
+        } else if(v>0){
+          const t=Math.min(1, v/mx);
+          color=`rgba(255,80,80,${0.15+t*0.45})`;  // dim red
+        } else {
+          color='rgba(180,200,220,0.18)'; // near-zero dim blue-grey
+        }
+        ctx.fillStyle=color;
+        ctx.fillRect(j*cell,i*cell,cell,cell);
+        // index label on diagonal
+        if(i===j){
+          ctx.fillStyle='rgba(0,0,0,0.75)';
+          ctx.font=`bold ${Math.max(8,cell/3.5)}px monospace`;
+          ctx.textAlign='center';
+          ctx.textBaseline='middle';
+          ctx.fillText(i, j*cell+cell/2, i*cell+cell/2);
+        }
+      }
+    }
+    // crisp black grid lines
+    ctx.strokeStyle='rgba(0,0,0,0.25)';
+    ctx.lineWidth=1;
+    for(let k=0;k<=n;k++){
+      ctx.beginPath();ctx.moveTo(k*cell+0.5,0);ctx.lineTo(k*cell+0.5,n*cell);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,k*cell+0.5);ctx.lineTo(n*cell,k*cell+0.5);ctx.stroke();
+    }
+
+    $('qubo-labels').innerHTML=
+      '<div style="display:flex;gap:14px;margin-bottom:6px">'+
+      '<span style="display:flex;align-items:center;gap:4px;font:9px monospace"><span style="display:inline-block;width:12px;height:12px;background:rgba(39,199,111,0.5);border:1px solid #aaa"></span> Reward (diagonal)</span>'+
+      '<span style="display:flex;align-items:center;gap:4px;font:9px monospace"><span style="display:inline-block;width:12px;height:12px;background:rgba(255,80,80,0.5);border:1px solid #aaa"></span> Penalty (conflict)</span>'+
+      '<span style="display:flex;align-items:center;gap:4px;font:9px monospace"><span style="display:inline-block;width:12px;height:12px;background:rgba(180,200,220,0.18);border:1px solid #aaa"></span> Zero</span>'+
+      '</div>'+
+      '<b style="color:var(--c)">Variables:</b> '+
+      d.labels.map((l,i)=>`<span style="color:var(--m)">[${i}]</span> <span style="color:#d8f4ff">${l}</span>`).join(' &nbsp; ');
+  }catch(e){
+    $('qubo-meta').textContent='QUBO visualization unavailable.';
+  }
+}
+
+async function loadCircuit(){
+  const view=$('circuit-view'), meta=$('circuit-meta');
+  view.innerHTML='<span style="font:10px \'Share Tech Mono\';color:var(--m)">Loading circuit…</span>';
+  try{
+    const r=await fetch('/api/circuit');
+    if(!r.ok){
+      view.innerHTML='<span style="font:10px \'Share Tech Mono\';color:var(--m)">Run optimization to generate circuit.</span>';
+      meta.innerHTML='';
+      return;
+    }
+    const svg=await r.text();
+    // strip XML declaration if present — innerHTML cannot handle <?xml ...?>
+    const cleanSvg=svg.replace(/^<\?xml[^?]*\?>\s*/,'');
+    view.innerHTML=cleanSvg;
+    if(_last_qaoa_meta_js){
+      const m=_last_qaoa_meta_js;
+      meta.innerHTML=[
+        ['QUBITS',m.n_variables],['QAOA DEPTH',m.qaoa_depth],
+        ['CIRCUIT DEPTH',m.circuit_depth],['TOTAL GATES',m.gate_count],
+        ['2Q GATES',m.two_qubit_gates],['SHOTS',m.shots],['BACKEND',m.backend],
+      ].map(([k,v])=>`<span style="font:9px 'Share Tech Mono';color:var(--m);margin-right:10px">${k} <b style="color:var(--c)">${v}</b></span>`).join('');
+    }
+  }catch(e){
+    view.innerHTML='<span style="font:10px \'Share Tech Mono\';color:var(--k)">Circuit visualization unavailable.</span>';
+  }
+}
+
+async function fetchPositions(){
+  try{
+    const r=await fetch('/api/satellites/positions');
+    const d=await r.json();
+    satPositions=d.positions;
+    satPositions.forEach(p=>{
+      const f=v=>typeof v==='number'?v.toFixed(2):'--';
+      const el=id=>$(id);
+      if(el(p.id+'-lat'))el(p.id+'-lat').textContent=f(p.lat)+'°';
+      if(el(p.id+'-lon'))el(p.id+'-lon').textContent=f(p.lon)+'°';
+      if(el(p.id+'-vel'))el(p.id+'-vel').textContent=f(p.vel_km_s)+' km/s';
+      if(el(p.id+'-per'))el(p.id+'-per').textContent=p.period_min+' min';
+    });
+  }catch(_){}
+}
+
+// ── OPTIMIZER ──
+$('btn-run').onclick=async()=>{
+  $('btn-run').disabled=true;
+  $('opt-status').innerHTML='<span class="warn">Running hybrid optimization…</span>';
+  log('Starting hybrid optimization'+(activeTgt?' for '+activeTgt:'')+'…');
+  try{
+    const body=activeTgt?{target_id:activeTgt}:{};
+    const r=await fetch('/api/optimize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.error){throw new Error(d.error);}
+    lastResult=d;
+    _last_qaoa_meta_js=d.qaoa ? {
+      n_variables: d.qaoa.n_variables,
+      qaoa_depth:  d.qaoa.depth,
+      circuit_depth: d.qaoa.circuit_depth,
+      gate_count:  d.qaoa.gate_count,
+      two_qubit_gates: d.qaoa.two_qubit_gates,
+      shots:       d.qaoa.shots,
+      backend:     d.qaoa.backend,
+    } : null;
+    renderResults(d);
+    $('opt-status').innerHTML=`<span class="ok">Complete · Method: ${d.final_method}</span>`;
+    log(`Optimization complete · ${d.final_method} · score ${d.comparison.classical_score}`,'ok');
+  }catch(e){
+    $('opt-status').innerHTML=`<span class="bad">Error: ${e.message}</span>`;
+    log('Optimization failed: '+e.message,'bad');
+  }
+  $('btn-run').disabled=false;
+};
+
+function renderResults(d){
+  $('results-blk').style.display='block';
+  const cmp=d.comparison, q=d.qaoa, cl=d.classical;
+
+  $('res-comparison').innerHTML=[
+    ['Final Method',d.final_method,'ok'],
+    ['CP-SAT Score',cmp.classical_score,''],
+    ['QAOA Score',cmp.qaoa_score,''],
+    ['Score Gap',cmp.score_gap,''],
+    ['Relative Gap',cmp.relative_gap_pct+'%',cmp.relative_gap_pct<5?'ok':'warn'],
+    ['Same Solution',cmp.same_solution?'YES':'NO',cmp.same_solution?'ok':'warn'],
+    ['CP-SAT Status',cl.status,'ok'],
+    ['CP-SAT Selected',cl.n_selected,''],
+    ['QAOA Feasible',q.feasible?'YES':'NO',q.feasible?'ok':'bad'],
+  ].map(([k,v,c])=>`<div class="res-row"><span>${k}</span><b class="${c}">${v}</b></div>`).join('');
+
+  $('res-qaoa').innerHTML=[
+    ['Variables',q.n_variables],
+    ['QAOA Depth',q.depth],
+    ['Circuit Depth',q.circuit_depth],
+    ['Total Gates',q.gate_count],
+    ['2-Qubit Gates',q.two_qubit_gates],
+    ['Shots',q.shots],
+    ['Backend',q.backend],
+    ['Best Energy',q.best_energy],
+    ['Bitstring',`<span style="word-break:break-all;font-size:9px">${q.bitstring}</span>`],
+    ['Violations',q.violations.length===0?'NONE':q.violations.length,''],
+  ].map(([k,v])=>`<div class="res-row"><span>${k}</span><b>${v}</b></div>`).join('');
+
+  const sel=d.selected||[];
+  $('res-schedule').innerHTML=sel.length?sel.map((s,i)=>
+    `<div class="res-row" style="flex-direction:column;gap:2px;padding:6px 0">
+      <div style="color:var(--c);font:10px 'Share Tech Mono'">#${i+1} ${s.satellite_id} → ${s.target_id}</div>
+      <div style="color:var(--m);font:9px 'Share Tech Mono'">${s.start_time.slice(11,19)} → ${s.end_time.slice(11,19)} UTC</div>
+      <div style="font:9px 'Share Tech Mono'">
+        <span class="ok">Score ${s.score}</span> &nbsp;
+        Elev ${s.elevation_deg}° &nbsp; IQ ${s.image_quality}
+      </div>
+    </div>`
+  ).join(''):'<div style="color:var(--m);font:10px \'Share Tech Mono\'">No observations selected.</div>';
+
+  // circuit
+  loadCircuit();
+  loadQubo();
+
+  // gantt
+  const gw=$('gantt-wrap');
+  gw.style.display='block';
+  gw.innerHTML='';
+  if(sel.length){
+    const t0=new Date(sel[0].start_time).getTime();
+    const t1=new Date(sel[sel.length-1].end_time).getTime();
+    const span=Math.max(t1-t0,1);
+    sel.forEach(s=>{
+      const a=new Date(s.start_time).getTime();
+      const b=new Date(s.end_time).getTime();
+      const div=document.createElement('div');
+      div.style.left=((a-t0)/span*100)+'%';
+      div.style.width=(Math.max(2,(b-a)/span*100))+'%';
+      div.textContent=s.satellite_id;
+      gw.appendChild(div);
+    });
+  }
+}
+</script>
+<script>
+// ── THREE.JS GLOBE ──
+const Re=6371, K=10/Re;
+const cv=$('globe');
+const ren=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+ren.setPixelRatio(Math.min(devicePixelRatio,2));
+const sc=new THREE.Scene();
+const cam=new THREE.PerspectiveCamera(40,1,0.1,2000);
+cam.position.set(0,0,28);
+sc.add(new THREE.AmbientLight(0x6f98b0,1.1));
+const sun=new THREE.DirectionalLight(0xffffff,2.6);
+sun.position.set(60,25,40);sc.add(sun);
+
+const eg=new THREE.Group(), sg=new THREE.Group(), tk=new THREE.Group();
+sc.add(eg,sg,tk);
+
+const TL=new THREE.TextureLoader();
+const PL='https://threejs.org/examples/textures/planets/';
+
+// earth
+const uni={
+  day:{value:TL.load(PL+'earth_atmos_2048.jpg')},
+  night:{value:TL.load(PL+'earth_lights_2048.png')},
+  spec:{value:TL.load(PL+'earth_specular_2048.jpg')},
+  sun:{value:new THREE.Vector3(1,0,0)}
+};
+const earth=new THREE.Mesh(
+  new THREE.SphereGeometry(10,128,128),
+  new THREE.ShaderMaterial({uniforms:uni,
+    vertexShader:`varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vUv=uv;vN=normalize(mat3(modelMatrix)*normal);vec4 w=modelMatrix*vec4(position,1.);vV=normalize(cameraPosition-w.xyz);gl_Position=projectionMatrix*viewMatrix*w;}`,
+    fragmentShader:`uniform sampler2D day,night,spec;uniform vec3 sun;varying vec2 vUv;varying vec3 vN;varying vec3 vV;void main(){vec3 n=normalize(vN);float d=dot(n,sun);float t=smoothstep(-.1,.2,d);vec3 dc=texture2D(day,vUv).rgb;vec3 lit=dc*(.18+1.05*max(d,0.));vec3 nt=dc*.05+texture2D(night,vUv).rgb*vec3(1.,.78,.45)*1.5;vec3 col=mix(nt,lit,t);vec3 h=normalize(sun+normalize(vV));col+=vec3(.7,.85,1.)*pow(max(dot(n,h),0.),70.)*texture2D(spec,vUv).r*step(0.,d)*.9;col+=vec3(.1,.5,1.)*pow(1.-max(dot(n,normalize(vV)),0.),3.)*.35*(.3+t);gl_FragColor=vec4(col,1.);}`
+  })
+);
+eg.add(earth);
+
+const clouds=new THREE.Mesh(
+  new THREE.SphereGeometry(10.12,96,96),
+  new THREE.MeshPhongMaterial({map:TL.load(PL+'earth_clouds_1024.png'),transparent:true,opacity:.5,depthWrite:false})
+);
+eg.add(clouds);
+
+// atmosphere
+sc.add(new THREE.Mesh(
+  new THREE.SphereGeometry(11.3,64,64),
+  new THREE.ShaderMaterial({transparent:true,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false,
+    vertexShader:`varying vec3 n;void main(){n=normalize(normalMatrix*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`varying vec3 n;void main(){float i=pow(.72-dot(n,vec3(0,0,1.)),3.);gl_FragColor=vec4(.1,.65,1.,1.)*i*1.6;}`
+  })
+));
+
+// graticule
+{
+  const gr=(pts,c,o)=>eg.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:c,transparent:true,opacity:o})));
+  const sv=(la,lo,r)=>new THREE.Vector3(r*Math.cos(la*D)*Math.cos(lo*D),r*Math.sin(la*D),-r*Math.cos(la*D)*Math.sin(lo*D));
+  for(let la=-75;la<=75;la+=15){const a=[];for(let lo=0;lo<=360;lo+=4)a.push(sv(la,lo,10.02));gr(a,la?0x16d9ff:0xffb454,la?.12:.6);}
+  for(let lo=0;lo<360;lo+=15){const a=[];for(let la=-90;la<=90;la+=4)a.push(sv(la,lo,10.02));gr(a,lo?0x16d9ff:0x39ffb0,lo?.12:.6);}
+}
+
+// stars
+{
+  const p=[];
+  for(let i=0;i<5000;i++){const r=400+Math.random()*600,a=Math.random()*6.283,b=Math.acos(2*Math.random()-1);p.push(r*Math.sin(b)*Math.cos(a),r*Math.cos(b),r*Math.sin(b)*Math.sin(a));}
+  const gm=new THREE.BufferGeometry();
+  gm.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
+  sc.add(new THREE.Points(gm,new THREE.PointsMaterial({color:0xbfe6f5,size:1.2,sizeAttenuation:false,transparent:true,opacity:.75})));
+}
+
+// lat/lon → 3D
+const sv=(la,lo,r)=>new THREE.Vector3(r*Math.cos(la*D)*Math.cos(lo*D),r*Math.sin(la*D),-r*Math.cos(la*D)*Math.sin(lo*D));
+// ECI → scene coords (backend uses x=ECI-x, y=ECI-y, z=ECI-z but Three uses Y-up)
+const ev=(lat,lon,alt)=>sv(lat,lon,(Re+alt)*K);
+
+// satellite 3D models
+const satMeshes=[];
+const satLabels=[];
+
+function makeSatModel(col){
+  const g=new THREE.Group();
+  const M=o=>new THREE.MeshStandardMaterial(o);
+  g.add(new THREE.Mesh(new THREE.BoxGeometry(.4,.3,.5),M({color:0xd7e5ee,metalness:.9,roughness:.25})));
+  const pm=M({color:0x1c4f86,emissive:col,emissiveIntensity:.25,metalness:.5,roughness:.3});
+  for(const s of[-1,1])for(let k=0;k<2;k++){
+    const p=new THREE.Mesh(new THREE.BoxGeometry(.5,.02,.38),pm);
+    p.position.set(s*(.7+k*.52),0,0);g.add(p);
+  }
+  const h=new THREE.Mesh(new THREE.SphereGeometry(.6,16,16),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.08,depthWrite:false}));
+  h.name='h';g.add(h);
+  g.scale.setScalar(1.2);
+  return g;
+}
+
+function initSatMeshes(){
+  if(!CFG)return;
+  // clear old
+  satMeshes.forEach(m=>sg.remove(m));
+  satMeshes.length=0;
+  satLabels.forEach(l=>l.remove());
+  satLabels.length=0;
+  $('labs').innerHTML='';
+
+  CFG.satellites.forEach((s,i)=>{
+    const col=parseInt(SAT_COLORS[i%SAT_COLORS.length].replace('#',''),16);
+    const m=makeSatModel(col);
+    sg.add(m);
+    satMeshes.push(m);
+
+    const lbl=document.createElement('div');
+    lbl.className='lab';
+    lbl.textContent=s.id;
+    lbl.style.color=SAT_COLORS[i%SAT_COLORS.length];
+    $('labs').appendChild(lbl);
+    satLabels.push(lbl);
+  });
+
+  // target markers
+  if(CFG.targets){
+    CFG.targets.forEach(t=>{
+      const p=sv(t.lat,t.lon,10.05);
+      const core=new THREE.Mesh(new THREE.OctahedronGeometry(.13),new THREE.MeshBasicMaterial({color:0x20dfff}));
+      core.position.copy(p);
+      core.userData.targetId=t.id;
+      eg.add(core);
+
+      const lbl=document.createElement('div');
+      lbl.className='lab tgt';
+      lbl.textContent=t.name.toUpperCase();
+      lbl.dataset.targetId=t.id;
+      $('labs').appendChild(lbl);
+      satLabels.push(lbl);
+      // store for projection
+      core.userData.label=lbl;
+      core.userData.worldPos=p;
+    });
+  }
+}
+
+function markActiveTarget(){
+  eg.children.forEach(c=>{
+    if(c.userData&&c.userData.targetId){
+      const isActive=c.userData.targetId===activeTgt;
+      c.material.color.set(isActive?0xff3d9a:0x20dfff);
+      if(c.userData.label){
+        c.userData.label.style.color=isActive?'#ff3d9a':'#ff9ccc';
+        c.userData.label.style.borderColor=isActive?'var(--k)':'var(--k)';
+      }
+    }
+  });
+}
+
+// sun direction
+function sunDir(ms){
+  const n=ms/864e5+2440587.5-2451545;
+  const L=(280.46+.9856474*n)*D, gg=(357.528+.9856003*n)*D;
+  const lm=L+(1.915*Math.sin(gg)+.02*Math.sin(2*gg))*D;
+  const ep=(23.439-4e-7*n)*D;
+  return new THREE.Vector3(Math.cos(lm),Math.sin(ep)*Math.sin(lm),-Math.cos(ep)*Math.sin(lm)).normalize();
+}
+
+// earth rotation (GMST simplified)
+function gmst(ms){return((280.46061837+360.98564736629*(ms/864e5+2440587.5-2451545))%360)*D;}
+
+// mouse / orbit control
+let isDrag=false, prevMouse={x:0,y:0}, camTheta=0, camPhi=Math.PI/2.2, camR=28;
+const pv=new THREE.Vector2(9,9);
+const rc=new THREE.Raycaster();
+const SP=new THREE.Sphere(new THREE.Vector3(),10);
+const HP=new THREE.Vector3();
+
+cv.addEventListener('pointerdown',e=>{isDrag=true;prevMouse={x:e.clientX,y:e.clientY};});
+cv.addEventListener('pointerup',()=>isDrag=false);
+cv.addEventListener('pointermove',e=>{
+  const rect=cv.getBoundingClientRect();
+  pv.set((e.clientX-rect.left)/rect.width*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
+  if(isDrag){
+    camTheta-=(e.clientX-prevMouse.x)*0.005;
+    camPhi=Math.max(.3,Math.min(Math.PI-.3,camPhi-(e.clientY-prevMouse.y)*0.005));
+    prevMouse={x:e.clientX,y:e.clientY};
+  }
+});
+cv.addEventListener('wheel',e=>{camR=Math.max(13,Math.min(60,camR+e.deltaY*0.02));});
+
+// ── RENDER LOOP ──
+function loop(){
+  requestAnimationFrame(loop);
+  const w=cv.clientWidth, h=cv.clientHeight;
+  if(cv.width!==w*ren.getPixelRatio()||cv.height!==h*ren.getPixelRatio()){
+    ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();
+  }
+
+  const now=Date.now();
+  cam.position.set(
+    camR*Math.sin(camPhi)*Math.sin(camTheta),
+    camR*Math.cos(camPhi),
+    camR*Math.sin(camPhi)*Math.cos(camTheta)
+  );
+  cam.lookAt(0,0,0);
+
+  // earth rotation
+  eg.rotation.y=gmst(now);
+  clouds.rotation.y+=0.00003;
+
+  // sun
+  const sd=sunDir(now);
+  uni.sun.value.copy(sd);
+  sun.position.copy(sd).multiplyScalar(80);
+
+  // cursor lat/lon
+  rc.setFromCamera(pv,cam);
+  if(rc.ray.intersectSphere(SP,HP)){
+    const l=eg.worldToLocal(HP.clone());
+    const r=l.length();
+    $('hLa').textContent=(Math.asin(l.y/r)/D).toFixed(2)+'°';
+    $('hLo').textContent=(Math.atan2(-l.z,l.x)/D).toFixed(2)+'°';
+  }
+
+  // update satellite meshes from live positions
+  if(satMeshes.length&&satPositions.length){
+    satPositions.forEach((p,i)=>{
+      if(!satMeshes[i])return;
+      const v=ev(p.lat,p.lon,p.alt);
+      satMeshes[i].position.copy(v);
+      satMeshes[i].lookAt(0,0,0);
+      satMeshes[i].rotateX(Math.PI/2);
+      satMeshes[i].getObjectByName('h').material.opacity=.08+.05*Math.sin(now/400+i);
+
+      // label projection
+      if(satLabels[i]){
+        const wp=v.clone().project(cam);
+        const vis=v.dot(cam.position.clone().normalize())>0;
+        satLabels[i].style.display=vis?'block':'none';
+        satLabels[i].style.left=((wp.x+1)/2*w)+'px';
+        satLabels[i].style.top=((1-wp.y)/2*h)+'px';
+      }
+    });
+  }
+
+  // target label projection
+  eg.children.forEach(c=>{
+    if(c.userData&&c.userData.label&&c.userData.worldPos){
+      const wp=c.userData.worldPos.clone();
+      eg.localToWorld(wp);
+      const pr=wp.clone().project(cam);
+      const vis=wp.dot(cam.position.clone().normalize())>0;
+      c.userData.label.style.display=vis?'block':'none';
+      c.userData.label.style.left=((pr.x+1)/2*w)+'px';
+      c.userData.label.style.top=((1-pr.y)/2*h)+'px';
+    }
+  });
+
+  ren.render(sc,cam);
+}
+
+// ── BOOT ──
+async function boot(){
+  loop();
+  await loadConfig();
+  initSatMeshes();
+  fetchPositions();
+  setInterval(fetchPositions,2000);
+}
+
+boot();
+</script>
+</body>
+</html>

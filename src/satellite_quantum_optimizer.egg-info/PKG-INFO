@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: satellite-quantum-optimizer
+Version: 0.1.0
+Summary: Hybrid classical-quantum satellite mission optimization
+Requires-Python: <3.13,>=3.12
+License-File: LICENSE
+Dynamic: license-file
